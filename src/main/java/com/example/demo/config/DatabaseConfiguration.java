@@ -2,18 +2,20 @@ package com.example.demo.config;
 
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@Configurable
-public class DataSource {
+import javax.sql.DataSource;
+
+@Configuration
+public class DatabaseConfiguration {
 
     @Bean
     public DataSource getDataSource() {
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setUrl("spring.datasource.url");
-        dataSource.setUsername("spring.datasource.username");
-        dataSource.setPassword("spring.datasource.password");
+        dataSource.setUrl("jdbc:mariadb://localhost:3306/sakila");
+        dataSource.setUsername("root");
+        dataSource.setPassword("root");
         return dataSource;
     }
 }

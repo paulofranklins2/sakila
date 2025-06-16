@@ -1,16 +1,14 @@
 package com.example.demo.dao;
 
-import org.springframework.context.annotation.Configuration;
+import com.example.demo.model.Language;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Configuration
+@Component
 public class LanguageDao {
     private final DataSource dataSource;
 
@@ -18,22 +16,45 @@ public class LanguageDao {
         this.dataSource = dataSource;
     }
 
-    public List<LanguageDao> finAll() {
-        String sql = "select * from language";
-        List<LanguageDao> languages = new ArrayList<>();
+    public List<Language> findAll() {
+        String sql = "SELECT * FROM language";
+        List<Language> languages = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+
             while (resultSet.next()) {
-                languages.add(new LanguageDao(
+                languages.add(new Language(
                         resultSet.getInt("language_id"),
-                        resultSet.getString("name")
-                ));
+                        resultSet.getString("name")));
             }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching languages: " + e.getMessage());
+        }
+
+        return languages;
+    }
+
+
+    public Language finById(int id) {
+        String sql = "select * from language where language_id = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return new Language(
+                            resultSet.getInt("language_id"),
+                            resultSet.getString("name"));
+                }
+            }
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return languages;
+        return null;
     }
 }
