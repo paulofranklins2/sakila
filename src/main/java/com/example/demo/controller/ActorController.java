@@ -17,24 +17,25 @@ public class ActorController {
     }
 
     @GetMapping("actor")
-    public List<Actor> getAllActors() {
-        return this.actorDao.findAll();
+    public ResponseEntity<List<Actor>> getAllActors() {
+        return ResponseEntity.ok(this.actorDao.findAll());
     }
 
     @GetMapping("actor/id/{id}")
-    public Actor getActorById(@PathVariable int id) {
-        return this.actorDao.findById(id);
+    public ResponseEntity<Actor> getActorById(@PathVariable int id) {
+        if (this.actorDao.findById(id) != null) return ResponseEntity.ok(this.actorDao.findById(id));
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @GetMapping("actor/name/{name}")
-    public Actor getActorById(@PathVariable String name) {
-        return this.actorDao.findByFirstName(name);
+    public ResponseEntity<Actor> getActorById(@PathVariable String name) {
+        if (this.actorDao.findByFirstName(name) != null) return ResponseEntity.ok(this.actorDao.findByFirstName(name));
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @DeleteMapping("actor/delete/{id}")
     public ResponseEntity<String> deleteActorById(@PathVariable int id) {
-        boolean deleted = this.actorDao.delete(id);
-        if (deleted) return ResponseEntity.ok("Actor deleted successfully.");
+        if (this.actorDao.delete(id)) return ResponseEntity.ok("Actor deleted successfully.");
         else return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Actor not found.");
     }
 
@@ -46,8 +47,7 @@ public class ActorController {
 
     @PatchMapping("actor/update/{id}")
     public ResponseEntity<String> updateActor(@PathVariable int id, @RequestBody Actor actor) {
-        boolean updated = this.actorDao.update(id, actor);
-        if (updated) return ResponseEntity.ok("Actor updated successfully.");
+        if (this.actorDao.update(id, actor)) return ResponseEntity.ok("Actor updated successfully.");
         else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while updating actor.");
     }
 
