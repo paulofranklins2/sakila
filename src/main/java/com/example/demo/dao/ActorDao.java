@@ -19,20 +19,28 @@ public class ActorDao {
         this.dataSource = dataSource;
     }
 
-    public List<Actor> findAll() {
-        String sql = "select * from actor";
+    public List<Actor> findAll(int page) {
+        String sql = "select * from actor LIMIT ? OFFSET ?";
         List<Actor> actors = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-            while (resultSet.next()) {
-                actors.add(new Actor(
-                        resultSet.getInt("actor_id"),
-                        resultSet.getString("first_name"),
-                        resultSet.getString("last_name")
-                ));
-            }
+        final int MAX_ACTORS_PER_PAGE = 20;
 
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, MAX_ACTORS_PER_PAGE);
+            preparedStatement.setInt(2, page * MAX_ACTORS_PER_PAGE);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+
+                while (resultSet.next()) {
+                    actors.add(new Actor(
+                            resultSet.getInt("actor_id"),
+                            resultSet.getString("first_name"),
+                            resultSet.getString("last_name")
+                    ));
+                }
+
+            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -117,7 +125,7 @@ public class ActorDao {
             int rowsAffected = preparedStatement.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to update actor with id " + id, e);
+            throw new RuntimeException("Failed to update actor.html with id " + id, e);
         }
     }
 
@@ -131,7 +139,7 @@ public class ActorDao {
             int affectedRows = preparedStatement.executeUpdate();
             return affectedRows > 0;
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to delete actor with id " + id, e);
+            throw new RuntimeException("Failed to delete actor.html with id " + id, e);
         }
     }
 }

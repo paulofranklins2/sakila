@@ -16,9 +16,9 @@ public class ActorController {
         this.actorDao = actorDao;
     }
 
-    @GetMapping("actor")
-    public ResponseEntity<List<Actor>> getAllActors() {
-        return ResponseEntity.ok(this.actorDao.findAll());
+    @GetMapping("actor/page/{page}")
+    public ResponseEntity<List<Actor>> getAllActors(@PathVariable int page) {
+        return ResponseEntity.ok(this.actorDao.findAll(page));
     }
 
     @GetMapping("actor/id/{id}")
@@ -42,13 +42,13 @@ public class ActorController {
     @PostMapping("actor/save")
     public ResponseEntity<String> saveActor(@RequestBody Actor actor) {
         if (this.actorDao.save(actor) != null) return ResponseEntity.ok("Actor saved successfully.");
-        else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while saving actor.");
+        else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while saving actor.html.");
     }
 
     @PatchMapping("actor/update/{id}")
     public ResponseEntity<String> updateActor(@PathVariable int id, @RequestBody Actor actor) {
         if (this.actorDao.update(id, actor)) return ResponseEntity.ok("Actor updated successfully.");
-        else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while updating actor.");
+        else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while updating actor.html.");
     }
 
 }
