@@ -23,7 +23,6 @@ function fetchActors(page) {
             data.forEach((actor, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-<!--                  <td>${(page - 1) * pageSize + index + 1}</td>-->
                   <td>${actor.actorId}</td>
                   <td>${actor.firstName}</td>
                   <td>${actor.lastName}</td>
